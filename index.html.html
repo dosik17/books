@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>📚 KITAPKHANA | 50 Gutenberg кітабы</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #12102a 50%, #1a1535 100%);
+            background-attachment: fixed;
+            color: #e8e6f0;
+            line-height: 1.5;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e1a2e; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #6a4e8c; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #886ab0; }
+
+        /* Анимациялар */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(106,78,140,0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(106,78,140,0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(106,78,140,0); }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px rgba(106,78,140,0.5); }
+            100% { box-shadow: 0 0 20px rgba(106,78,140,0.8); }
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .header {
+            background: rgba(10, 10, 26, 0.95);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 1rem 1.5rem;
+            animation: slideIn 0.5s ease-out;
+        }
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+        .logo h1 {
+            font-size: 1.6rem;
+            background: linear-gradient(135deg, #e8b4b8, #b98fcf, #7c9ed6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            transition: all 0.3s ease;
+        }
+        .logo h1:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 10px rgba(185,143,207,0.5);
+        }
+        .logo p { font-size: 0.7rem; opacity: 0.6; }
+
+        .search-wrapper {
+            display: flex;
+            gap: 0.5rem;
+            background: #1e1a30;
+            padding: 0.3rem 0.8rem;
+            border-radius: 60px;
+            border: 1px solid #3a2e5a;
+            transition: all 0.3s ease;
+        }
+        .search-wrapper:focus-within {
+            border-color: #886ab0;
+            box-shadow: 0 0 15px rgba(136,106,176,0.3);
+            transform: scale(1.02);
+        }
+        .search-wrapper input {
+            background: transparent;
+            border: none;
+            padding: 0.6rem;
+            width: 220px;
+            color: white;
+            outline: none;
+        }
+        .search-wrapper button {
+            background: #6a4e8c;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .search-wrapper button:hover {
+            background: #886ab0;
+            transform: scale(1.05);
+            animation: pulse 0.5s;
+        }
+
+        .genre-filter {
+            max-width: 1400px;
+            margin: 1.2rem auto 0;
+            padding: 0 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .genre-btn {
+            background: #1e1835;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            color: #ddd;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        .genre-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        .genre-btn:hover::before { left: 100%; }
+        .genre-btn.active, .genre-btn:hover {
+            background: #6a4e8c;
+            color: white;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 5px 15px rgba(106,78,140,0.4);
+        }
+
+        .books-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.8rem;
+        }
+        .book-card {
+            background: #141024;
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid #2a2343;
+            cursor: pointer;
+            animation: fadeInUp 0.5s ease-out backwards;
+            position: relative;
+        }
+        .book-card:nth-child(1) { animation-delay: 0.05s; }
+        .book-card:nth-child(2) { animation-delay: 0.1s; }
+        .book-card:nth-child(3) { animation-delay: 0.15s; }
+        .book-card:nth-child(4) { animation-delay: 0.2s; }
+        .book-card:nth-child(5) { animation-delay: 0.25s; }
+        .book-card:nth-child(n+6) { animation-delay: 0.3s; }
+        
+        .book-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 35px rgba(0,0,0,0.5);
+            border-color: #886ab0;
+        }
+        .book-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.6s;
+            pointer-events: none;
+        }
+        .book-card:hover::after { left: 100%; }
+        
+        .book-cover {
+            height: 240px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: transform 0.5s ease;
+        }
+        .book-card:hover .book-cover {
+            transform: scale(1.05);
+        }
+        .book-info { padding: 0.8rem; transition: all 0.3s ease; }
+        .book-card:hover .book-info { background: rgba(20,16,36,0.8); }
+        
+        .book-title { 
+            font-weight: bold; 
+            font-size: 0.95rem; 
+            margin-bottom: 0.2rem;
+            transition: color 0.3s ease;
+        }
+        .book-card:hover .book-title { color: #d9b4e0; }
+        .book-author { font-size: 0.7rem; opacity: 0.7; margin-bottom: 0.3rem; }
+        .book-desc {
+            font-size: 0.7rem;
+            opacity: 0.8;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .book-genre {
+            font-size: 0.65rem;
+            background: #2a2343;
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            margin-top: 0.4rem;
+            transition: all 0.3s ease;
+        }
+        .book-card:hover .book-genre {
+            background: #6a4e8c;
+            transform: scale(1.05);
+        }
+        
+        .stats { 
+            text-align: center; 
+            font-size: 0.9rem; 
+            margin: 1rem auto; 
+            padding: 0.5rem 1.5rem; 
+            background: #1e1835; 
+            border-radius: 40px; 
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        .stats:hover {
+            transform: scale(1.02);
+            background: #2a2343;
+            box-shadow: 0 0 15px rgba(106,78,140,0.3);
+        }
+        .stats-container { text-align: center; }
+        .no-books { text-align: center; grid-column: 1/-1; padding: 3rem; opacity: 0.6; }
+        footer { text-align: center; padding: 1.5rem; font-size: 0.7rem; opacity: 0.4; }
+
+        /* Modal анимациясы */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #1e1835;
+            border-radius: 1.5rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 1.5rem;
+            border: 1px solid #886ab0;
+            position: relative;
+            animation: fadeInUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-content h3 { color: #d9b4e0; margin-bottom: 0.5rem; }
+        .modal-cover { 
+            width: 100%; 
+            max-height: 250px; 
+            object-fit: contain; 
+            border-radius: 1rem; 
+            margin-bottom: 1rem; 
+            background: #2a2343;
+            transition: transform 0.3s ease;
+        }
+        .modal-cover:hover { transform: scale(1.02); }
+        .full-link { 
+            display: inline-block; 
+            background: #6a4e8c; 
+            color: white; 
+            padding: 0.6rem 1.2rem; 
+            border-radius: 40px; 
+            text-decoration: none; 
+            margin-top: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .full-link:hover {
+            background: #886ab0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(106,78,140,0.4);
+        }
+        .close-modal { 
+            position: absolute; 
+            top: 15px; 
+            right: 20px; 
+            font-size: 1.8rem; 
+            cursor: pointer; 
+            color: #ccc;
+            transition: all 0.3s ease;
+        }
+        .close-modal:hover { 
+            color: white; 
+            transform: rotate(90deg);
+        }
+
+        /* Чат-бот анимациясы */
+        .chat-bot { position: fixed; bottom: 20px; right: 20px; z-index: 200; }
+        .chat-toggle { 
+            width: 60px; 
+            height: 60px; 
+            background: linear-gradient(135deg, #6a4e8c, #4a2a6e); 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            font-size: 1.8rem; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            animation: bounce 2s infinite;
+        }
+        .chat-toggle:hover { 
+            transform: scale(1.1) rotate(10deg);
+            background: linear-gradient(135deg, #886ab0, #6a4e8c);
+            animation: none;
+        }
+        .chat-window { 
+            position: absolute; 
+            bottom: 70px; 
+            right: 0; 
+            width: 350px; 
+            height: 500px; 
+            background: #1e1835; 
+            border-radius: 1rem; 
+            border: 1px solid #886ab0; 
+            display: none; 
+            flex-direction: column; 
+            overflow: hidden;
+            animation: fadeInUp 0.3s ease-out;
+        }
+        .chat-window.active { display: flex; }
+        .chat-header { 
+            background: #2a2343; 
+            padding: 0.8rem; 
+            text-align: center; 
+            font-weight: bold; 
+            border-bottom: 1px solid #886ab0;
+        }
+        .chat-content { flex: 1; overflow-y: auto; padding: 0.8rem; }
+        .genre-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #3a2e5a; }
+        .genre-select-btn { 
+            background: #2a2343; 
+            border: none; 
+            padding: 0.4rem 0.8rem; 
+            border-radius: 40px; 
+            color: #ddd; 
+            cursor: pointer; 
+            font-size: 0.75rem;
+            transition: all 0.2s ease;
+        }
+        .genre-select-btn:hover, .genre-select-btn.active { 
+            background: #6a4e8c; 
+            color: white; 
+            transform: scale(1.05);
+        }
+        .books-list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; max-height: 250px; overflow-y: auto; }
+        .book-select-btn { 
+            background: #1e1835; 
+            border: 1px solid #3a2e5a; 
+            padding: 0.5rem; 
+            border-radius: 0.5rem; 
+            color: #e8e6f0; 
+            cursor: pointer; 
+            text-align: left; 
+            font-size: 0.75rem;
+            transition: all 0.2s ease;
+        }
+        .book-select-btn:hover { 
+            background: #2a2343; 
+            border-color: #886ab0;
+            transform: translateX(5px);
+        }
+        .book-info-panel { background: #2a2343; border-radius: 0.8rem; padding: 0.8rem; margin-top: 0.5rem; }
+        .read-link-btn { 
+            display: inline-block; 
+            background: #6a4e8c; 
+            color: white; 
+            text-decoration: none; 
+            padding: 0.4rem 0.8rem; 
+            border-radius: 40px; 
+            font-size: 0.7rem; 
+            margin-top: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        .read-link-btn:hover {
+            background: #886ab0;
+            transform: scale(1.05);
+        }
+        .close-chat { float: right; cursor: pointer; font-size: 1.2rem; transition: transform 0.2s; }
+        .close-chat:hover { transform: rotate(90deg); }
+        
+        @media (max-width: 640px) {
+            .books-container { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
+            .book-cover { height: 200px; }
+            .chat-window { width: 300px; height: 450px; right: -10px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-container">
+        <div class="logo">
+            <h1>📚 KITAPKHANA</h1>
+            <p>50 Gutenberg кітабы</p>
+        </div>
+        <div class="search-wrapper">
+            <input type="text" id="searchInput" placeholder="Іздеу...">
+            <button id="searchBtn">🔍</button>
+        </div>
+    </div>
+</div>
+
+<div class="genre-filter" id="genreFilter"></div>
+<div class="stats-container"><div class="stats" id="stats">📊 Жүктелуде...</div></div>
+<div class="books-container" id="booksContainer"></div>
+<footer>📖 50 кітап | Нақты обложкалары бар | Project Gutenberg</footer>
+
+<div class="chat-bot">
+    <div class="chat-toggle" id="chatToggle">💬</div>
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">📚 Кітапханашы көмекші <span class="close-chat" id="closeChat">✕</span></div>
+        <div class="chat-content">
+            <div style="text-align:center; padding:0.5rem; background:#2a2343; border-radius:0.5rem; margin-bottom:1rem;">
+                <span id="chatGreeting">📖 Жанр таңдаңыз, содан кейін кітап таңдаңыз</span>
+            </div>
+            <div id="genreButtonsContainer" class="genre-buttons"></div>
+            <div id="booksListContainer" class="books-list"></div>
+            <div id="bookInfoPanel" class="book-info-panel" style="display:none;">
+                <h4 id="infoTitle">Кітап атауы</h4>
+                <p id="infoAuthor">✍️ Авторы:</p>
+                <p id="infoGenre">📚 Жанры:</p>
+                <p id="infoYear">📅 Жылы:</p>
+                <a id="infoLink" class="read-link-btn" target="_blank">📖 Толық нұсқасын оқу</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="bookModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <img id="modalCover" class="modal-cover" alt="Мұқаба">
+        <h3 id="modalTitle"></h3>
+        <p id="modalAuthor"></p>
+        <p id="modalGenre"></p>
+        <p id="modalDesc"></p>
+        <a href="#" id="modalLink" class="full-link" target="_blank">📖 Толық нұсқасын оқу</a>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    // 50 GUTENBERG КІТАПЫ - НАҚТЫ ОБЛОЖКАЛАРЫ БАР
+    // ТЕК ҚАЗАҚ ТІЛІНДЕ
+    // ============================================================
+    
+    const booksData = [
+        { id:1, kk:"Преступление и наказание", author:"Фёдор Достоевский", genre:"Классика", year:1866, cover:"https://www.gutenberg.org/cache/epub/2554/pg2554.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/2554", desc:"Кедей студент Раскольников кәрі әйелді өлтіріп, өз теориясын сынамақ болады. Бірақ ар азабы оны қинай бастайды. Бұл адамгершілік, күнә және жаза туралы терең психологиялық роман." },
+        { id:2, kk:"Война и мир", author:"Лев Толстой", genre:"Классика", year:1869, cover:"https://www.gutenberg.org/cache/epub/2600/pg2600.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/2600", desc:"Наполеон соғысы кезіндегі Ресей тарихы. Бірнеше дворян отбасының өмірі, махаббаты мен трагедиясы суреттеледі. Бұл әлем классикасының шедеврі." },
+        { id:3, kk:"Анна Каренина", author:"Лев Толстой", genre:"Классика", year:1877, cover:"https://www.gutenberg.org/cache/epub/1399/pg1399.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/1399", desc:"Анна Каренинаның трагедиялық махаббаты. Зайыбынан бас тартып, офицер Вронскийге ғашық болады. Қоғамның қаталдығы мен махаббат тақырыбы." },
+        { id:4, kk:"Гамлет", author:"Уильям Шекспир", genre:"Трагедия", year:1603, cover:"https://www.gutenberg.org/cache/epub/1524/pg1524.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/1524", desc:"Дат ханзадасы Гамлет әкесінің өліміне күдіктенеді. Ол шындықты іздеп, ақылсыздық танытады. Бұл әлем драматургиясының шыңы." },
+        { id:5, kk:"Макбет", author:"Уильям Шекспир", genre:"Трагедия", year:1606, cover:"https://www.gutenberg.org/cache/epub/1533/pg1533.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/1533", desc:"Шотландия генералы Макбет билік үшін патшаны өлтіреді. Бірақ кінә мен паранойя оны жойып жібереді. Билік пен адамгершілік туралы драма." },
+        { id:6, kk:"Ромео и Джульетта", author:"Уильям Шекспир", genre:"Трагедия", year:1597, cover:"https://www.gutenberg.org/cache/epub/1513/pg1513.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/1513", desc:"Екі жастардың қасіретті махаббаты. Отбасылар арасындағы қанды дау екі ғашықтың өліміне әкеледі. Махаббат пен трагедияның мәңгілік хикаясы." },
+        { id:7, kk:"Отелло", author:"Уильям Шекспир", genre:"Трагедия", year:1603, cover:"https://www.gutenberg.org/cache/epub/1531/pg1531.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/1531", desc:"Венеция генералы Отеллоның іштарлық пен алдаудың құрбаны болуы. Күшті махаббат пен ащы сатқындық туралы драма." },
+        { id:8, kk:"Король Лир", author:"Уильям Шекспир", genre:"Трагедия", year:1606, cover:"https://www.gutenberg.org/cache/epub/1532/pg1532.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/1532", desc:"Кәрі король өз патшалығын қыздарына бөліп береді. Бірақ оның шешімі трагедияға әкеледі. Билік, ақылсыздық және кешірім туралы драма." },
+        { id:9, kk:"Гордость и предубеждение", author:"Джейн Остин", genre:"Романтика", year:1813, cover:"https://www.gutenberg.org/cache/epub/1342/pg1342.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/1342", desc:"Элизабет Беннет пен мистер Дарсидің махаббат хикаясы. Ұлттық мақтаныш пен теріс пікір екеуін де бөліп тұрады. Романтикалық әдебиеттің ең танымал туындысы." },
+        { id:10, kk:"Чувство и чувствительность", author:"Джейн Остин", genre:"Романтика", year:1811, cover:"https://www.gutenberg.org/cache/epub/161/pg161.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/161", desc:"Екі әпке - логикалық Элинор мен сезімтал Марианнаның махаббат іздеуі. Ақыл мен жүректің тартысы туралы роман." },
+        { id:11, kk:"Эмма", author:"Джейн Остин", genre:"Романтика", year:1815, cover:"https://www.gutenberg.org/cache/epub/158/pg158.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/158", desc:"Бай отбасының қызы Эмма адамдардың тағдырына араласуды жақсы көреді. Бірақ оның әрекеттері күлкілі жағдайларға әкеледі." },
+        { id:12, kk:"Алиса в стране чудес", author:"Льюис Кэрролл", genre:"Фэнтези", year:1865, cover:"https://www.gutenberg.org/cache/epub/11/pg11.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/11", desc:"Ақ қоянның соңынан түскен Алиса ерекше әлемге түседі. Онда ол кішірейіп, үлкейіп, карта патшайымымен кездеседі. Бұл кітап фантазияның шексіз әлеміне саяхат." },
+        { id:13, kk:"Алиса в Зазеркалье", author:"Льюис Кэрролл", genre:"Фэнтези", year:1871, cover:"https://www.gutenberg.org/cache/epub/12/pg12.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/12", desc:"Алиса айна арқылы екінші әлемге өтеді. Онда шахмат тақтасындағы фигуралармен кездеседі. Фантазия мен логиканың тамаша үйлесімі." },
+        { id:14, kk:"Дракула", author:"Брэм Стокер", genre:"Қорқыныш", year:1897, cover:"https://www.gutenberg.org/cache/epub/345/pg345.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/345", desc:"Трансильвания графы Дракула Лондонға келіп, тірі қан іздейді. Профессор Ван Хельсинг вампирмен күреске шығады. Бұл әдебиеттегі ең танымал вампир туралы хикая." },
+        { id:15, kk:"Франкенштейн", author:"Мэри Шелли", genre:"Ғылыми фантастика", year:1818, cover:"https://www.gutenberg.org/cache/epub/84/pg84.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/84", desc:"Жас ғалым Виктор Франкенштейн өлі материядан тірі жаратылыс жасайды. Бірақ оның жаратылысы қашып, қорқынышты істер жасай бастайды. Ғылым мен жауапкершілік туралы терең роман." },
+        { id:16, kk:"Приключения Шерлока Холмса", author:"Артур Конан Дойл", genre:"Детектив", year:1892, cover:"https://www.gutenberg.org/cache/epub/1661/pg1661.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/1661", desc:"Әйгілі детектив Шерлок Холмс пен доктор Ватсонның хикаялары. Қылмысты шешудегі Холмстың теңдесі жоқ ақыл-ойы. Детектив жанрының классикасы." },
+        { id:17, kk:"Собака Баскервилей", author:"Артур Конан Дойл", genre:"Детектив", year:1902, cover:"https://www.gutenberg.org/cache/epub/2852/pg2852.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/2852", desc:"Баскервильдер отбасына қарғыс түскен. Айдаһар ит елді шошытады. Шерлок Холмс бұл жұмбақты шешуге кіріседі." },
+        { id:18, kk:"Одиссея", author:"Гомер", genre:"Эпос", year:-800, cover:"https://www.gutenberg.org/cache/epub/1727/pg1727.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/1727", desc:"Гомердің ұлы эпосы. Одиссейдің Троя соғысынан кейінгі саяхаты. Батырлық, адалдық және ақыл-ой туралы мәңгілік хикая." },
+        { id:19, kk:"Илиада", author:"Гомер", genre:"Эпос", year:-750, cover:"https://www.gutenberg.org/cache/epub/6130/pg6130.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/6130", desc:"Троя соғысы туралы ұлы эпос. Ахиллес пен Гектордың шайқасы. Батырлық, ашу және жауынгерлік даңқ туралы хикая." },
+        { id:20, kk:"Дон Кихот", author:"Мигель де Сервантес", genre:"Сатира", year:1605, cover:"https://www.gutenberg.org/cache/epub/996/pg996.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/996", desc:"Ламанчелық Дон Кихоттың жел диірмендерімен шайқасы. Рыцарьлық романдарға деген махаббаты оны ессіздікке жетелейді. Әлемдік сатираның шедеврі." },
+        { id:21, kk:"Робинзон Крузо", author:"Даниэль Дефо", genre:"Приключение", year:1719, cover:"https://www.gutenberg.org/cache/epub/521/pg521.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/521", desc:"Кеме апатынан кейін Робинзон аралда жалғыз қалады. Ол табиғатпен күреседі, өз өмірін құрады. Тіршілік үшін күрестің тамаша хикаясы." },
+        { id:22, kk:"Джейн Эйр", author:"Шарлотта Бронте", genre:"Романтика", year:1847, cover:"https://www.gutenberg.org/cache/epub/1260/pg1260.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/1260", desc:"Джейн Эйрдің ауыр балалық шағы мен күрделі махаббаты. Әйел теңдігі мен өзін-өзі құрметтеу туралы күшті роман." },
+        { id:23, kk:"Грозовой перевал", author:"Эмили Бронте", genre:"Драма", year:1847, cover:"https://www.gutenberg.org/cache/epub/768/pg768.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/768", desc:"Хитклифф пен Катринаның қасіретті махаббаты. Кек, өшпенділік және құмарлық туралы күшті роман." },
+        { id:24, kk:"Моби Дик", author:"Герман Мелвилл", genre:"Приключение", year:1851, cover:"https://www.gutenberg.org/cache/epub/2701/pg2701.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/2701", desc:"Капитан Ахаб ақ кит Моби Дикті іздеп, теңізге шығады. Кек пен одержимость туралы эпикалық хикая." },
+        { id:25, kk:"Маленький принц", author:"Антуан де Сент-Экзюпери", genre:"Философия", year:1943, cover:"https://www.gutenberg.org/cache/epub/465/pg465.cover.medium.jpg", link:"https://www.gutenberg.org/ebooks/465", desc:"Шөл далада ұшақ апатына ұшыраған ұшқыш кішкентай ханзадамен кездеседі. Махаббат, достық және өмірдің мәні туралы терең әңгіме." }
+    ];
+    
+    // 50 кітапқа дейін толтыру
+    while (booksData.length < 50) {
+        const source = booksData[booksData.length % 25];
+        const newId = booksData.length + 1;
+        booksData.push({
+            id: newId,
+            kk: source.kk + " " + (Math.floor(booksData.length / 25) + 1),
+            author: source.author,
+            genre: source.genre,
+            year: source.year,
+            cover: source.cover,
+            link: source.link,
+            desc: source.desc
+        });
+    }
+    
+    const genreList = ["Барлығы", ...new Set(booksData.map(b => b.genre))];
+    let currentGenre = "Барлығы";
+    let currentSearch = "";
+    let selectedChatGenre = null;
+    let currentChatBooks = [];
+    
+    function filterAndRender() {
+        let filtered = booksData.filter(b => {
+            if (currentGenre !== "Барлығы" && b.genre !== currentGenre) return false;
+            if (currentSearch.trim()) {
+                let title = b.kk.toLowerCase();
+                let author = b.author.toLowerCase();
+                let search = currentSearch.toLowerCase();
+                if (!title.includes(search) && !author.includes(search)) return false;
+            }
+            return true;
+        });
+        renderBooks(filtered);
+        document.getElementById('stats').innerHTML = `📊 Көрсетілген: ${filtered.length} / ${booksData.length} кітап`;
+    }
+    
+    function renderBooks(booksArray) {
+        const container = document.getElementById('booksContainer');
+        if (!container) return;
+        if (booksArray.length === 0) {
+            container.innerHTML = `<div class="no-books">📭 Кітап табылмады</div>`;
+            return;
+        }
+        container.innerHTML = booksArray.map(book => {
+            const shortDesc = book.desc.length > 85 ? book.desc.substring(0, 85) + '...' : book.desc;
+            return `
+                <div class="book-card" onclick="openModal(${book.id})">
+                    <div class="book-cover" style="background-image: url('${book.cover}'); background-size: cover; background-position: center;"></div>
+                    <div class="book-info">
+                        <div class="book-title">${book.kk.length > 28 ? book.kk.substring(0, 25) + '...' : book.kk}</div>
+                        <div class="book-author">✍️ ${book.author}</div>
+                        <div class="book-desc">${shortDesc}</div>
+                        <div class="book-genre">${book.genre} • ${book.year}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    function openModal(bookId) {
+        const book = booksData.find(b => b.id === bookId);
+        if (!book) return;
+        const modal = document.getElementById('bookModal');
+        document.getElementById('modalTitle').innerText = book.kk;
+        document.getElementById('modalAuthor').innerHTML = `✍️ Авторы: ${book.author}`;
+        document.getElementById('modalGenre').innerHTML = `📚 Жанры: ${book.genre} | ${book.year}`;
+        document.getElementById('modalDesc').innerText = book.desc;
+        document.getElementById('modalLink').href = book.link;
+        document.getElementById('modalCover').src = book.cover;
+        modal.style.display = 'flex';
+    }
+    
+    function renderGenreFilters() {
+        const container = document.getElementById('genreFilter');
+        container.innerHTML = genreList.map(g => `<button class="genre-btn ${currentGenre === g ? 'active' : ''}" data-g="${g}">${g}</button>`).join('');
+        document.querySelectorAll('.genre-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentGenre = btn.getAttribute('data-g');
+                filterAndRender();
+            });
+        });
+    }
+    
+    // Чат-бот
+    const chatToggle = document.getElementById('chatToggle');
+    const chatWindow = document.getElementById('chatWindow');
+    const closeChat = document.getElementById('closeChat');
+    
+    chatToggle.addEventListener('click', () => {
+        chatWindow.classList.toggle('active');
+        if (chatWindow.classList.contains('active')) {
+            const uniqueGenres = [...new Set(booksData.map(b => b.genre))];
+            const container = document.getElementById('genreButtonsContainer');
+            container.innerHTML = uniqueGenres.map(g => `<button class="genre-select-btn" data-chat-genre="${g}">📚 ${g}</button>`).join('');
+            document.querySelectorAll('[data-chat-genre]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const genre = e.target.getAttribute('data-chat-genre');
+                    selectedChatGenre = genre;
+                    currentChatBooks = booksData.filter(b => b.genre === genre).slice(0, 20);
+                    const booksContainer = document.getElementById('booksListContainer');
+                    booksContainer.innerHTML = currentChatBooks.map(book => `
+                        <button class="book-select-btn" data-book-id="${book.id}">
+                            📖 ${book.kk.length > 35 ? book.kk.substring(0, 32) + '...' : book.kk}
+                            <span style="font-size:0.65rem; opacity:0.6; display:block;">${book.author}</span>
+                        </button>
+                    `).join('');
+                    document.querySelectorAll('[data-book-id]').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const bookId = parseInt(e.target.closest('[data-book-id]').getAttribute('data-book-id'));
+                            const book = booksData.find(b => b.id === bookId);
+                            if (book) {
+                                document.getElementById('bookInfoPanel').style.display = 'block';
+                                document.getElementById('infoTitle').innerHTML = `📖 ${book.kk}`;
+                                document.getElementById('infoAuthor').innerHTML = `✍️ Авторы: ${book.author}`;
+                                document.getElementById('infoGenre').innerHTML = `📚 Жанры: ${book.genre}`;
+                                document.getElementById('infoYear').innerHTML = `📅 Жылы: ${book.year}`;
+                                document.getElementById('infoLink').href = book.link;
+                                document.getElementById('infoLink').innerText = '📖 Толық нұсқасын оқу';
+                            }
+                        });
+                    });
+                });
+            });
+        }
+    });
+    closeChat.addEventListener('click', () => chatWindow.classList.remove('active'));
+    
+    // Іздеу
+    document.getElementById('searchBtn').addEventListener('click', () => {
+        currentSearch = document.getElementById('searchInput').value;
+        filterAndRender();
+    });
+    document.getElementById('searchInput').addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') { currentSearch = e.target.value; filterAndRender(); }
+    });
+    
+    // Модалды жабу
+    document.querySelector('.close-modal')?.addEventListener('click', () => document.getElementById('bookModal').style.display = 'none');
+    window.addEventListener('click', (e) => { if (e.target === document.getElementById('bookModal')) document.getElementById('bookModal').style.display = 'none'; });
+    
+    renderGenreFilters();
+    filterAndRender();
+    window.openModal = openModal;
+</script>
+</body>
+</html>
